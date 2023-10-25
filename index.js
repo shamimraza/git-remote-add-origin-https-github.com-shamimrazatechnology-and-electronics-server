@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const cors = require('cors');
 const app = express();
@@ -62,14 +62,31 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
+        // http://localhost:5000/brand-product/${params.brand}
+
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await productCollection.findOne(query);
+            res.send(result);
+        })
         app.get('/product/:brandName', async (req, res) => {
             const brand = req.params.brandName;
             const result = await productCollection.find({ name: brand }).toArray();
             res.send(result);
         })
 
+        // user related api
+
+        // app.post('/products', async (req, res) => {
+        //     const products = req.body;
+        //     console.log(products);
+        //     const result = await productCollection.insertOne(products)
+        //     res.send(result)
+        // })
+
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
